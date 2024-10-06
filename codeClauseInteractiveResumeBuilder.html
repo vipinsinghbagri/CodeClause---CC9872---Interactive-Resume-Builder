@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Resume Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            text-align: center;
+            padding: 2rem;
+            background-color: #2c3e50;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            display: flex;
+            padding: 2rem;
+            justify-content: space-between;
+        }
+        .form-section, .preview-section {
+            width: 45%;
+            padding: 2rem;
+            background-color: white;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
+        .form-section {
+            background-color: #f8f9fa;
+            border: 2px solid #ecf0f1;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .form-group label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0px 0px 5px rgba(52, 152, 219, 0.3);
+        }
+        .form-group input:hover, .form-group textarea:hover {
+            border-color: #2980b9;
+        }
+        .resume-preview {
+            font-size: 16px;
+            background-color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .resume-preview p {
+            margin: 10px 0;
+        }
+
+        /* Button styles */
+        button {
+            background-color: #2980b9;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #1a73e8;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        /* Template selector */
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            background-color: #f8f9fa;
+            border: 1px solid #bdc3c7;
+            transition: all 0.3s ease;
+        }
+        select:hover {
+            border-color: #2980b9;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .form-section, .preview-section {
+                width: 90%;
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Interactive Resume Builder</h1>
+    </header>
+
+    <div class="container">
+        <!-- Form Section -->
+        <div class="form-section">
+            <h2>Input Your Details</h2>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" placeholder="Enter your phone number">
+            </div>
+            <div class="form-group">
+                <label for="skills">Skills</label>
+                <textarea id="skills" rows="4" placeholder="List your skills"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="experience">Experience</label>
+                <textarea id="experience" rows="4" placeholder="Describe your experience"></textarea>
+            </div>
+            
+            <label for="template">Choose Template</label>
+            <select id="template">
+                <option value="template1">Template 1</option>
+                <option value="template2">Template 2</option>
+            </select>
+
+            <button id="download-btn">Download Resume</button>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="preview-section">
+            <h2>Resume Preview</h2>
+            <div class="resume-preview" id="resume-preview">
+                <p><strong>Name:</strong> <span id="preview-name">Your Name</span></p>
+                <p><strong>Email:</strong> <span id="preview-email">Your Email</span></p>
+                <p><strong>Phone:</strong> <span id="preview-phone">Your Phone</span></p>
+                <p><strong>Skills:</strong> <span id="preview-skills">Your Skills</span></p>
+                <p><strong>Experience:</strong> <span id="preview-experience">Your Experience</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the html2pdf library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+    <!-- JS for functionality -->
+    <script>
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
+        const skillsInput = document.getElementById('skills');
+        const experienceInput = document.getElementById('experience');
+
+        const previewName = document.getElementById('preview-name');
+        const previewEmail = document.getElementById('preview-email');
+        const previewPhone = document.getElementById('preview-phone');
+        const previewSkills = document.getElementById('preview-skills');
+        const previewExperience = document.getElementById('preview-experience');
+
+        // Live update preview as user types
+        nameInput.addEventListener('input', () => previewName.textContent = nameInput.value);
+        emailInput.addEventListener('input', () => previewEmail.textContent = emailInput.value);
+        phoneInput.addEventListener('input', () => previewPhone.textContent = phoneInput.value);
+        skillsInput.addEventListener('input', () => previewSkills.textContent = skillsInput.value);
+        experienceInput.addEventListener('input', () => previewExperience.textContent = experienceInput.value);
+
+        // Handle Resume Download
+        document.getElementById('download-btn').addEventListener('click', function() {
+            const resumeElement = document.getElementById('resume-preview');
+            const opt = {
+                margin:       1,
+                filename:     'resume.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            // Generate and download the PDF
+            html2pdf().from(resumeElement).set(opt).save();
+        });
+    </script>
+
+</body>
+</html>
